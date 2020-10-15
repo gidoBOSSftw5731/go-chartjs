@@ -9,7 +9,7 @@ go wrapper for [chartjs](http://chartjs.org)
 
 Chartjs charts are defined purely in JSON, so this library is mostly
 structs and struct-tags that dictate how to marshal to JSON. None of the currently
-implemented parts are stringly-typed in this library so it can avoid many errors.
+implemented parts are strongly-typed in this library so it can avoid many errors.
 
 The chartjs javascript/JSON api has a [lot of surface area](http://www.chartjs.org/docs/).
 Currently, only the options that I use are provided. More can and will be added as I need
