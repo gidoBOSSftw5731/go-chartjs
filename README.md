@@ -53,16 +53,23 @@ type xy struct {
 	r []float64
 }
 
+// Xs is a function to return all X values in the struct of type xy
 func (v xy) Xs() []float64 {
 	return v.x
 }
+
+// Ys is a function to return all Y values in the struct of type xy
 func (v xy) Ys() []float64 {
 	return v.y
 }
+
+// Rs is a function to return all R values in the struct of type xy
 func (v xy) Rs() []float64 {
 	return v.r
 }
+//end of required methods
 
+// check is a basic error checking function. 
 func check(e error) {
 	if e != nil {
 		log.Fatal(e)
@@ -70,8 +77,8 @@ func check(e error) {
 }
 
 func main() {
-	var xys1 xy
-	var xys2 xy
+	// define two datasets to plot on the same graph
+	var xys1, xys2 xy
 
     // make some example data.
 	for i := float64(0); i < 9; i += 0.1 {
@@ -92,37 +99,75 @@ func main() {
 	}
 
 	// a Dataset contains the data and styling info.
-	d1 := chartjs.Dataset{Data: xys1, BorderColor: colors[1], Label: "sin(x)", Fill: chartjs.False,
-		PointRadius: 10, PointBorderWidth: 4, BackgroundColor: colors[0]}
+	d1 := chartjs.Dataset{
+		Data: xys1, 
+		BorderColor: colors[1], 
+		Label: "sin(x)", 
+		Fill: chartjs.False,
+		PointRadius: 10,
+		PointBorderWidth: 4,
+		BackgroundColor: colors[0]}
 
-	d2 := chartjs.Dataset{Data: xys2, BorderWidth: 8, BorderColor: colors[3], Label: "3*cos(2*x)",
-		Fill: chartjs.False, PointStyle: chartjs.Star}
+	d2 := chartjs.Dataset{
+		Data: xys2, 
+		BorderWidth: 8, 
+		BorderColor: colors[3], 
+		Label: "3*cos(2*x)",
+		Fill: chartjs.False, 
+		PointStyle: chartjs.Star}
 
+	// define chart
 	chart := chartjs.Chart{Label: "test-chart"}
-
-	var err error
-	_, err = chart.AddXAxis(chartjs.Axis{Type: chartjs.Linear, Position: chartjs.Bottom, ScaleLabel: &chartjs.ScaleLabel{FontSize: 22, LabelString: "X", Display: chartjs.True}})
+	
+	// Define a chart X axis for the entire chart
+	// do this once per x axis
+	_, err := chart.AddXAxis(
+		chartjs.Axis{
+			Type: chartjs.Linear, 
+			Position: chartjs.Bottom, 
+			ScaleLabel: &chartjs.ScaleLabel{
+				FontSize: 22,
+				LabelString: "X",
+				Display: chartjs.True}})
 	check(err)
-	d1.YAxisID, err = chart.AddYAxis(chartjs.Axis{Type: chartjs.Linear, Position: chartjs.Left,
-		ScaleLabel: &chartjs.ScaleLabel{LabelString: "sin(x)", Display: chartjs.True}})
+	
+	// Define the dataset's Y axis and their properties
+	// do this once per Y axis
+	d1.YAxisID, err := chart.AddYAxis(
+		chartjs.Axis{
+			Type: chartjs.Linear,
+			// can be Top, Bottom, Left, or Right
+			Position: chartjs.Left,
+			ScaleLabel: &chartjs.ScaleLabel{
+				LabelString: "sin(x)",
+				Display: chartjs.True}})
 	check(err)
 	chart.AddDataset(d1)
 
-	d2.YAxisID, err = chart.AddYAxis(chartjs.Axis{Type: chartjs.Linear, Position: chartjs.Right,
-		ScaleLabel: &chartjs.ScaleLabel{LabelString: "3*cos(2*x)", Display: chartjs.True}})
+	d2.YAxisID, err := chart.AddYAxis(
+		chartjs.Axis{
+			Type: chartjs.Linear, 
+			Position: chartjs.Right,
+			ScaleLabel: &chartjs.ScaleLabel{
+				LabelString: "3*cos(2*x)",
+				Display: chartjs.True}})
 	check(err)
 	chart.AddDataset(d2)
-
+	
+	// chartjs.False is a pointer to false (the boolean) added
+	// "so that we can differentiate between unset and false"
+	// -godoc
 	chart.Options.Responsive = chartjs.False
 
-	wtr, err := os.Create("example-chartjs-multi.html")
-	if err != nil {
+	// create and open file to save html to
+	// please add error checking for real world use
+	wtr, _ := os.Create("example-chartjs-multi.html")
+	defer wtr.Close()
+	
+	// save file to writer
+	err = chart.SaveHTML(wtr, nil)
+	check(err)
 	}
-	if err := chart.SaveHTML(wtr, nil); err != nil {
-		log.Fatal(err)
-	}
-	wtr.Close()
-}
 ```
 
 The resulting html will have an interactive `<canvas>` element that looks like this.
