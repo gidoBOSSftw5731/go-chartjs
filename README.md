@@ -44,6 +44,7 @@ import (
 	"os"
 
 	chartjs "github.com/brentp/go-chartjs"
+	"github.com/brentp/go-chartjs/types"
 )
 
 // satisfy the required interface with this struct and methods.
